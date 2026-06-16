@@ -1,4 +1,4 @@
-/*main.c*/
+/*main.cpp*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +10,6 @@
 #endif
 
 #define MAX 40
-
 
 struct date{
 	int day;
@@ -73,8 +72,6 @@ printf("\nNo hay viajeros\n");
 }
 
 back();
-//getchar();
-//getchar();
 
 break;
 case '2' :
@@ -101,7 +98,6 @@ printf("\nAnnio: ");
 scanf(" %d", &newTraveler.flight_date.year);
 printf("\nDestino: ");
 scanf(" %s", newTraveler.destiny);
-
 
 insert(c, newTraveler, pos);
 }
@@ -177,7 +173,6 @@ bool askPosition(const struct collection &c, int &pos){
     return valid;
 }
 
-
 //insert a traveler according to the position
 void insert(struct collection &c, struct traveler newTraveler, int pos){
 		c.tope++;
@@ -230,8 +225,6 @@ int counter = 1;
 	}
 }
 
-
-
 void back(){
 	char letter;
 	do{
@@ -239,6 +232,3 @@ void back(){
 		scanf(" %c", &letter);
 	}while(letter != 'r' && letter != 'R');
 }
-
-
-
