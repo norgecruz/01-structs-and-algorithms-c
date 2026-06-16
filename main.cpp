@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #ifdef _WIN32
 	#define CLEAR "cls"
 #else 
@@ -30,24 +31,24 @@ struct collection{
 	int tope;
 };
 
-
-struct collection insert(struct collection c, struct traveler new, int pos);
-struct collection simpleInsertion(struct collection c, struct traveler newTraveler);
-void show(struct collection c);
+bool availability(const struct collection &c);
+bool askPosition(const struct collection &c, int &pos);
+void insert(struct collection &c, struct traveler newTraveler, int pos);
+void simpleInsertion(struct collection &c, struct traveler newTraveler);
+void show(const struct collection &c);
 void back();
 
 int main()
 {
-
 struct collection c;
 struct traveler newTraveler;
-c.tope= -1;
+c.tope = -1;
 int pos;
 
 char options = '0';
 do{
 system(CLEAR);
-printf("\n===================================\n");
+printf("===================================\n");
 printf("Agencia de viajes");
 printf("\n===================================\n");
 
@@ -62,8 +63,8 @@ scanf(" %c", &options);
 switch(options){
 case '1' :
 system(CLEAR);
-printf("\n===================\n");
-printf("Viajeros");
+printf("===================\n");
+printf("Listado de Viajeros");
 printf("\n===================\n");
 if(c.tope > -1){
 show(c);
@@ -78,7 +79,13 @@ back();
 break;
 case '2' :
 system(CLEAR);
+printf("=========================\n");
+printf("Insercion indicando posicion");
+printf("\n=========================\n");
 printf("\nComplete los siguientes datos");
+
+pos = -1;
+if(askPosition(c, pos)){
 printf("\nID: ");
 scanf(" %d", &newTraveler.id);
 printf("\nNombre: ");
@@ -95,29 +102,21 @@ scanf(" %d", &newTraveler.flight_date.year);
 printf("\nDestino: ");
 scanf(" %s", newTraveler.destiny);
 
-/*printf("\nIndica en que posicion quieres insertar al viajero: ");
-scanf(" %d", &pos);
-*/
 
-if(c.tope == -1){
-	pos = 0;
-}else{
-	printf("Indica una posicion entre 0 y %d: ", c.tope+1);
-	scanf(" %d", &pos);
+insert(c, newTraveler, pos);
 }
 
-if(pos<0 || pos>c.tope+1){
-	printf("Posicion invalida\n");
-}else{
-c = insert(c, newTraveler, pos);
-printf("\nEl usuario ha sido insertado\n");
-}
 back();
 break;
 
 case '3' :
 system(CLEAR);
+printf("============================\n");
+printf("Insercion simple");
+printf("\n============================\n");
 printf("Complete los siguientes datos\n");
+
+if(availability(c)){
 printf("\nID: ");
 scanf("%d", &newTraveler.id);
 printf("\nNombre: ");
@@ -134,8 +133,10 @@ scanf(" %d", &newTraveler.flight_date.year);
 printf("\nDestino: ");
 scanf(" %s", newTraveler.destiny);
 
-c=simpleInsertion(c,newTraveler);
+simpleInsertion(c,newTraveler);
 printf("\nEl usuario ha sido insertado\n");
+}
+
 back();
 break;
 
@@ -153,24 +154,65 @@ break;
 return 0;
 }
 
-//insert a traveler according to the position
-struct collection insert(struct collection c, struct traveler newTraveler, int pos){
-	c.tope++;
-	for(int i = c.tope - 1; i>=pos; i--){
-		c.arr[i+1] = c.arr[i];
-	}
-	c.arr[pos] = newTraveler;
-	return c;
+bool askPosition(const struct collection &c, int &pos){
+    bool valid = true;
+
+    if(c.tope == MAX - 1){
+        printf("\nLa lista esta llena\n");
+        valid = false;
+    }
+    else if(c.tope == -1){
+        pos = 0;
+    }
+
+    while(valid && c.tope != -1 && (pos < 0 || pos > c.tope + 1)){
+        printf("\nIndica una posicion entre 0 y %d: ", c.tope + 1);
+        scanf(" %d", &pos);
+
+        if(pos < 0 || pos > c.tope + 1){
+            printf("\nPosicion invalida\n");
+        }
+    }
+
+    return valid;
 }
+
+
+//insert a traveler according to the position
+void insert(struct collection &c, struct traveler newTraveler, int pos){
+		c.tope++;
+		for(int i = c.tope - 1; i>=pos; i--){
+			c.arr[i+1] = c.arr[i];
+		}
+		c.arr[pos] = newTraveler;
+		printf("\n El usuario ha sido insertado\n");
+}
+
+bool availability(const struct collection &c){
+    bool valid = true;
+    
+    if(c.tope == MAX - 1){
+        printf("\nLa lista esta llena\n");
+        valid = false;
+    }
+    return valid;
+}
+
 //simple way to insert a traveler
-struct collection simpleInsertion(struct collection c, struct traveler newTraveler){
+void simpleInsertion(struct collection &c, struct traveler newTraveler){
+	if(c.tope == MAX - 1){
+		printf("\nla coleccion esta llena");
+	}
+	
 	c.arr[c.tope+1] = newTraveler;
 	c.tope++;
-	return c;
+	//c.tope++;
+	//c.arr[c.tope] = newTraveler;
+	//return c;
 }
 
 //to show the travelers
-void show(struct collection c){
+void show(const struct collection &c){
 int counter = 1;
 	for(int i=0; i<= c.tope; i++){
 		printf("Numero: %d\n", counter);
